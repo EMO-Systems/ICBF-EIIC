@@ -1,6 +1,6 @@
 import os
 import zipfile
-fp = 'scratch/input/osm/'
+fp = 'preprocessing/input/osm/'
 s = os.listdir(fp)
 for n in s:
     p = n.split('-')

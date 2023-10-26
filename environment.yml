@@ -1,0 +1,6 @@
+name: icbf-eiic
+channels:
+  - conda-forge
+dependencies:
+  - geopandas
+  - tqdm
