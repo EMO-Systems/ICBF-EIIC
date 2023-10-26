@@ -68,8 +68,8 @@ Building data is downloaded from:
 
 Boundary Data is downloaded from:
 
-* [2016 Census Subdivisions Boundary File](https://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lcsd000b16a_e.zip)
-* [2016 Province/Territory Boundary File](http://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lpr_000a16a_e.zip)
+* [2016 Census Subdivisions Boundary File](https://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lcsd000b21a_e.zip)
+* [2016 Province/Territory Boundary File](http://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lpr_000a21a_e.zip)
 
 ### How To Download The Data:
 To simplify this process of downloading the required data, a bash script was created to automate this process (see ./data/download_open_building_footprints.sh). To download all of the required data for this project, simply modify the bash script to be executable (e.g. `chmod u+x download_open_building_footprints.sh`) and then run the script `./download_open_building_footprints.sh` in the terminal from the data directory.
@@ -93,12 +93,12 @@ The solution to this is to preprocess the data, by combining all of the Canadian
  * `pip install pygeos`
  * `pip install tqdm`
 3. Create an `output` directory in the same folder as the preprocessing scripts
-4. Ensure a copy of boundary lpr_000a16a_e.* shape files is accessible by the script (e.g. copy the boundary shape files to the script's directory)
+4. Ensure a copy of boundary lpr_000a21a_e.* shape files is accessible by the script (e.g. copy the boundary shape files to the script's directory)
 5. Create an `input` directory
 6. Create an `osm` directory within the `input` directory, and copy all OSM shape files to the directory. (Note: Geofabrik names all their building shape files the same, so you will need to provide unique names for each shape file (e.g. add a prov/terr abbreviation prefix to each file).
 7. Create an `ms` directory within the `input` directory, and copy all MS GeoJSON files to the directory.
 8. Make sure the `merge_and_split_preprocessing.sh` bash script is executable (e.g. `chmod u+x <file-name>`)
-9. Run the `merge_and_split_prepocessing.sh` script in a terminal, or run the python script manually (Example: `python merge_and_split.py input/ms split/lpr_000a16a_e.shp PRUID`).
+9. Run the `merge_and_split_prepocessing.sh` script in a terminal, or run the python script manually (Example: `python merge_and_split.py input/ms split/lpr_000a21a_e.shp PRUID`).
 10. Copy preprocessed zipped data for use in the next step (3. Merging).
 
 
@@ -120,7 +120,7 @@ The final output is a merged building footprints GeoJSON file for each province/
  * `pip install pygeos`
 2. Update provided bash script `odb_osm_ms_building_footprint_merge.sh` with ODB, OSM, MS, CSD data file paths (if using the script). Note: Make sure to copy the data from the preprocessing step to a location you have access to for this script.
 3. If the provided bash script is being used, ensure that the bash script is executable. If it's not, use `chmod u+x odb_osm_ms_building_footprint_merge.sh` to make it executable. 
-4. Run script that processes the merging of Canadian building footprints using the sources ODB, OSM, and MS, by typing `./odb_osm_ms_building_footprint_merge.sh` in the terminal. Alternatively you can also run the Merge.py script directly and provide the required CLI arguments prov/terr abbreviation, ODB data, OSM, data, MS data, and CSD data sources. Example: `python Merge.py ab ../data/odb/ab/ODB_Alberta/odb_alberta.shp ../data/osm/AB.geojson ../data/ms/AB.geojson ../data/lcsd000b16a_e/lcsd000b16a_e.shp`.
+4. Run script that processes the merging of Canadian building footprints using the sources ODB, OSM, and MS, by typing `./odb_osm_ms_building_footprint_merge.sh` in the terminal. Alternatively you can also run the Merge.py script directly and provide the required CLI arguments prov/terr abbreviation, ODB data, OSM, data, MS data, and CSD data sources. Example: `python Merge.py ab ../data/odb/ab/ODB_Alberta/odb_alberta.shp ../data/osm/AB.geojson ../data/ms/AB.geojson ../data/lcsd000b21a_e/lcsd000b21a_e.shp`.
  * A geojson file for each province/territory is exported by the merge script which is compressed as a zip file, and saved in the `merge/` directory by bash script.
  
 Note: All OSM building data is merged into the merged datasets due to not knowing what future applications are needed for this data. This includes polygons that represent parts of a building (e.g. buildings of type == roof). If portions of buildings are not required for your application, you may want to filter out/remove these rows of data from each dataset.

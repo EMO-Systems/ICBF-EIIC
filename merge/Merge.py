@@ -2,7 +2,7 @@
 Merge geospatial building footprint data from multiple sources, following
 the hierarchy of ODB > OSM > MS when features overlap.
 
-Usage Example: python Merge.py ab ../data/odb/ab/ODB_Alberta/odb_alberta.shp ../data/osm/ab/gis_osm_buildings_a_free_1.shp ../data/ms/ab/Alberta.geojson ../data/lcsd000b16a_e/lcsd000b16a_e.shp
+Usage Example: python Merge.py ab ../data/odb/ab/ODB_Alberta/odb_alberta.shp ../data/osm/ab/gis_osm_buildings_a_free_1.shp ../data/ms/ab/Alberta.geojson ../data/lcsd000b21a_e/lcsd000b21a_e.shp
 
 Data sources:
     - Open Database of Buildings (ODB), provided by Statistics Canada.
@@ -14,6 +14,7 @@ import time
 import os.path
 import sys
 import geopandas as gpd
+import pandas as pd
 from geopandas.tools import sjoin
 
 
@@ -36,7 +37,7 @@ def copy_csd_data(gdf, csd):
     """
     gdf_centroids = gpd.GeoDataFrame(gdf.centroid, geometry = gdf.centroid, crs = gdf.crs)
 
-    gdf_centroids_csd_join = sjoin(gdf_centroids, csd, how = 'left', op = 'within')
+    gdf_centroids_csd_join = sjoin(gdf_centroids, csd, how = 'left', predicate = 'within')
 
     gdf = gdf.to_crs('epsg:4326')
 
@@ -74,11 +75,11 @@ def combine_building_footprints(odb_gdf, osm_gdf, ms_gdf):
     """
 
     # Combine OSM and MS geodatframes
-    temp = osm_gdf.append(ms_gdf)
+    temp = pd.concat([osm_gdf, ms_gdf])
 
     # Combine ODB with previously combined osm/ms geodataframe
     if odb_gdf is not None:
-        final = odb_gdf.append(temp)
+        final = pd.concat([odb_gdf, temp])
     else:
         final = temp
 
@@ -172,10 +173,10 @@ def main(region, odb_file, osm_file, ms_file, csd_file):
         # -------------------------------------------------
         if odb_file:
             print("Find intersection between ODB and OSM")
-            odb_osm_intersection = sjoin(osm, odb, how="left", op="intersects")
+            odb_osm_intersection = sjoin(osm, odb, how="left", predicate="intersects")
 
             print("Find intersection between ODB and MS")
-            odb_ms_intersection = sjoin(ms, odb, how="left", op="intersects")
+            odb_ms_intersection = sjoin(ms, odb, how="left", predicate="intersects")
 
             # Exclude ODB Footprints from OSM data-sets if they already exists
             print("Get unique OSM features which don't exist as ODB building footprints")
@@ -196,7 +197,8 @@ def main(region, odb_file, osm_file, ms_file, csd_file):
             ms_unique = ms
 
         print("Find an intersection between unique OSM and MS features")
-        osm_ms_intersection = sjoin(ms_unique, osm_unique, how="left", op="intersects")
+        osm_ms_intersection = sjoin(ms_unique, osm_unique, how="left",
+                predicate="intersects")
 
         # Exclude OSM building footprints from MS data-set if they already exists
         print("Get MS features which exist as OSM building footprints")

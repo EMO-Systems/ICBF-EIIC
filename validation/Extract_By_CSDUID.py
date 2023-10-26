@@ -1,7 +1,7 @@
 """
-Extract building footprints based on CSDUID 
+Extract building footprints based on CSDUID
 
-Usage Example: python Extract_By_CSDUID.py 3506008 ../data/osm/on/gis_osm_buildings_a_free_1.shp ../data/lcsd000b16a_e/lcsd000b16a_e.shp
+Usage Example: python Extract_By_CSDUID.py 3506008 ../data/osm/on/gis_osm_buildings_a_free_1.shp ../data/lcsd000b21a_e/lcsd000b21a_e.shp
 """
 import os.path
 import sys
@@ -69,7 +69,7 @@ def main(csduid, bf_file, csd_file):
 
         # Copy CSDUID to dataset
         bfcsd = copy_csduid(bf, csd)
-    
+
         bfcsd = bfcsd[bfcsd['CSDUID'] == csduid]
 
         # Export all building features for each randomnly selected csd

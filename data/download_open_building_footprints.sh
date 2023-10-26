@@ -156,15 +156,16 @@ unzip ODB_v2_Saskatchewan.zip -d sk
 
 # Download CSD Data
 echo Downloading Census Subdivision Data
-mkdir ../lcsd000b16a_e
-cd ../lcsd000b16a_e
-wget --no-check-certificate https://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lcsd000b16a_e.zip
-unzip lcsd000b16a_e.zip
+mkdir ../lcsd000b21a_e
+cd ../lcsd000b21a_e
+wget --no-check-certificate https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lcsd000b21a_e.zip
+unzip lcsd000b21a_e.zip
+
 
 # Download Prov/Terr Boundary Data
 echo Downloading Province and Territory Boundary Data
-mkdir ../lpr_000a16a_e
-cd ../lpr_000a16a_e
-wget --no-check-certificate http://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lpr_000a16a_e.zip
-unzip lpr_000a16a_e.zip
+mkdir ../lpr_000a21a_e
+cd ../lpr_000a21a_e
+wget --no-check-certificate https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000a21a_e.zip
+unzip lpr_000a21a_e.zip
 

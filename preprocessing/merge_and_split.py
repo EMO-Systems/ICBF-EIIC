@@ -6,6 +6,7 @@ Usage Example: python merge_and_split.py input/ms split/lpr_000b16a_e.shp PRUID
 """
 import sys
 import os
+import pandas as pd
 import geopandas as gpd
 import geopandas.tools as gdptools
 from tqdm import tqdm
@@ -53,7 +54,7 @@ def combine_inputs(input_dir):
                 temp = temp.to_crs(INPUT_CRS)
 
                 if combined_data is not None:
-                    combined_data = combined_data.append(temp)
+                    combined_data = pd.concat([combined_data, temp])
                 else:
                     combined_data = temp
 
@@ -113,7 +114,7 @@ def main(inputs_dir, split_data, split_field):
     input_centroids = gpd.GeoDataFrame(inputs_df.centroid, geometry=inputs_df.centroid, crs=inputs_df.crs)
 
     # Intersect split data with input centroids
-    intersected_data = gdptools.sjoin(input_centroids, split_features, how='left', op='within')
+    intersected_data = gdptools.sjoin(input_centroids, split_features, how='left', predicate='within')
 
     # Copy intersected split field value to input dataframe
     inputs_df[split_field] = intersected_data[split_field]
