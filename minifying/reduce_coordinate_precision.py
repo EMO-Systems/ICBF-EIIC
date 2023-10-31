@@ -5,6 +5,7 @@ import sys
 import fiona
 import shapely.geometry
 import shapely.wkt
+import os
 from tqdm import tqdm
 
 
@@ -43,7 +44,7 @@ def main(input_file, coord_precision):
     :param coord_precision {number} - Number of decimal places to reduce coordinate precision to
     """
 
-    print("Opening input data...")
+    print(f"Opening input data {input_file}")
     with fiona.open(input_file) as input_features:
         print("Reducing input features coordinate precision")
         reduce_coordinate_precision(input_features, coord_precision)
@@ -52,6 +53,9 @@ def main(input_file, coord_precision):
 if __name__ == '__main__':
     if len(sys.argv) >= 3:
         args = sys.argv
-        main(sys.argv[1], sys.argv[2])
+        if os.path.exists(args[1]):
+            main(sys.argv[1], sys.argv[2])
+        else:
+            raise ValueError(f"{args[1]} not found in {os.getcwd()}")
     else:
         raise SyntaxError("Invalid number of arguments.")
