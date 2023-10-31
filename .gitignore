@@ -2,3 +2,16 @@
 #######################
 __pycache__/
 .idea/
+merge/merge
+lcsd000b21a_e
+lpr_000a21a_e
+ms
+odb
+osm
+input
+output
+preprocessed_ms.zip
+preprocessed_osm.zip
+split
+*log
+meow*

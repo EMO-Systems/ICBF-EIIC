@@ -51,10 +51,17 @@ def combine_inputs(input_dir):
             if file_ext == 'shp' or file_ext == 'geojson':
                 print("\nReading input file {}".format(file))
                 temp = gpd.read_file(input_dir + '/' + file)
-                temp = temp.to_crs(INPUT_CRS)
+                # It is possible for this to fail if the geometry is not valid
+                try:
+                    temp = temp.to_crs(INPUT_CRS)
+                except:
+                    temp = None
 
                 if combined_data is not None:
-                    combined_data = pd.concat([combined_data, temp])
+                    if temp is None:
+                        combined_data = combined_data
+                    else:
+                        combined_data = pd.concat([combined_data, temp])
                 else:
                     combined_data = temp
 
