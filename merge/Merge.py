@@ -19,7 +19,7 @@ from geopandas.tools import sjoin
 
 
 
-def copy_csd_data(gdf, csd):
+def copy_csd_data(gdf, csd, geography):
     """
     Copy csd field data/calculate geometry data to geodataframe
 
@@ -29,20 +29,25 @@ def copy_csd_data(gdf, csd):
         Geodataframe containing the building footprint data
     csd: geodataframe
         Geodataframe containing the Census Subdivision data
+    geography: str
+        Code for Census geography to be used.
 
     Returns
     -------
     gdf: geodataframe
         An updated geodataframe with new fields containing csd and geometry data.
     """
+    geography_name = f"{geography}NAME"
+    geography_code = f"{geography}UID"
+
     gdf_centroids = gpd.GeoDataFrame(gdf.centroid, geometry = gdf.centroid, crs = gdf.crs)
 
     gdf_centroids_csd_join = sjoin(gdf_centroids, csd, how = 'left', predicate = 'within')
 
     gdf = gdf.to_crs('epsg:4326')
 
-    gdf['CSDUID'] = gdf_centroids_csd_join['CSDUID']
-    gdf['CSDNAME'] = gdf_centroids_csd_join['CSDNAME']
+    gdf[geography_code] = gdf_centroids_csd_join[geography_code]
+    gdf[geography_name] = gdf_centroids_csd_join[geography_name]
     gdf['Shape_Area'] = gdf_centroids_csd_join.geometry.area
     gdf['Shape_Leng'] = gdf_centroids_csd_join.geometry.length
 
@@ -86,7 +91,7 @@ def combine_building_footprints(odb_gdf, osm_gdf, ms_gdf):
     return final
 
 
-def main(region, odb_file, osm_file, ms_file, csd_file):
+def main(region, odb_file, osm_file, ms_file, csd_file, geography='CSD'):
     """
     Main entry point of the merging script
 
@@ -103,6 +108,8 @@ def main(region, odb_file, osm_file, ms_file, csd_file):
         File location for Microsft building footprints.
     csd_file: str
         File location for census subdivision file.
+    geography: str
+        The Census geography analysis unit.
     """
 
     start_time = time.time()
@@ -152,15 +159,17 @@ def main(region, odb_file, osm_file, ms_file, csd_file):
         ms = gpd.read_file(ms_file)
 
         # Read CSD dataset
-        print("Reading Census Subdivision Dataset ...")
+        print("Reading Census Geography Dataset ...")
         csd = gpd.read_file(csd_file)
 
         # Query CSD features for the province/territory being processed
-        print("Querying Census Subdivision Dataset to Only include features in selected {}".format(pr_terr_abrv))
+        print("Querying Census Geography Dataset to Only include features in selected {}".format(pr_terr_abrv))
         csd = csd[csd['PRUID'] == pr_terr_id]
 
+        geography_name = f"{geography}NAME"
+        geography_code = f"{geography}UID"
         # Drop all but CSDUID, CSDNAME, and geometry fields from csd
-        csd = csd[['CSDUID', 'CSDNAME', 'geometry']]
+        csd = csd[[geography_code, geography_name, 'geometry']]
 
         # Update CRS of MS and OSM data to match ODB EPSG:3347 CRS
         print("Updating OSM and MS Coordinate Reference Systems")
@@ -180,14 +189,14 @@ def main(region, odb_file, osm_file, ms_file, csd_file):
 
             # Exclude ODB Footprints from OSM data-sets if they already exists
             print("Get unique OSM features which don't exist as ODB building footprints")
-            osm_unique = odb_osm_intersection[odb_osm_intersection.CSDNAME.isnull()]
+            osm_unique = odb_osm_intersection[odb_osm_intersection[geography_name].isnull()]
 
             # Remove unneeded spatial join columns
             osm_unique = osm_unique[osm.columns]
 
             # Exclude ODB Footprints from MS data-sets if they already exists
             print("Get unique MS features which don't exist as ODB building footprints")
-            ms_unique = odb_ms_intersection[odb_ms_intersection.CSDNAME.isnull()]
+            ms_unique = odb_ms_intersection[odb_ms_intersection[geography_name].isnull()]
 
             # Remove unneeded spatial join columns
             ms_unique = ms_unique[ms.columns]
@@ -217,10 +226,10 @@ def main(region, odb_file, osm_file, ms_file, csd_file):
 
         # -------------------------------------------------
         print("Copy CSD data to building footprint features")
-        osm_unique = copy_csd_data(osm_unique, csd)
+        osm_unique = copy_csd_data(osm_unique, csd, geography=geography)
         osm_unique['Data_prov'] = 'OSM'
 
-        ms_unique = copy_csd_data(ms_unique, csd)
+        ms_unique = copy_csd_data(ms_unique, csd, geography=geography)
         ms_unique['Data_prov'] = 'Microsoft'
         # -------------------------------------------------
         print('Appending ODB, OSM, MS together')

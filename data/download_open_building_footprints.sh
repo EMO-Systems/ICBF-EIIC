@@ -169,3 +169,9 @@ cd ../lpr_000a21a_e
 wget --no-check-certificate https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000a21a_e.zip
 unzip lpr_000a21a_e.zip
 
+# Download Dissemination Areas
+echo Downloading Dissemination Area Boundaries
+mkdir ../lda_000b21a_e
+cd ../lda_000b21a_e
+wget --no-check-certificate https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lda_000b21a_e.zip
+unzip lda_000b21a_e.zip
