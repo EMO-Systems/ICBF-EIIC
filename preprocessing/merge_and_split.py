@@ -53,16 +53,23 @@ def combine_inputs(input_dir):
                 temp = gpd.read_file(input_dir + '/' + file)
                 # It is possible for this to fail if the geometry is not valid
                 try:
+                    print(f"Converting {file} to {INPUT_CRS}")
                     temp = temp.to_crs(INPUT_CRS)
                 except:
                     temp = None
 
                 if combined_data is not None:
                     if temp is None:
+                        print(f"Failed to add {file}")
                         combined_data = combined_data
                     else:
+                        print(f"Successfully added {file}")
                         combined_data = pd.concat([combined_data, temp])
                 else:
+                    if temp is None:
+                        print(f"Failed to add {file}")
+                    else:
+                        print(f"Successfully added {file}")
                     combined_data = temp
 
     return combined_data
@@ -95,8 +102,10 @@ def split_data_by_split_field(input_data, split_field):
             # Export unique input_features
             unique_split_features.to_file('output/' + PRUID_ABRV_MAP[split_value] + '.geojson', driver='GeoJSON')
 
+            # TODO: For some reason, this is printing "" instead of 0 when
+            #       none are dropped.
             # Print number of duplicate features dropped
-            print("{} of {} duplicate features dropped in {}".format(
+            print("{} of {} features dropped as duplicate in {}".format(
                 len(split_data.geometry) - len(unique_split_features.geometry), len(split_data.geometry), PRUID_ABRV_MAP[split_value]))
 
 
