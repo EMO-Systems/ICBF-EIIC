@@ -169,7 +169,13 @@ def main(region, odb_file, osm_file, ms_file, csd_file, geography='CSD'):
         geography_name = f"{geography}NAME"
         geography_code = f"{geography}UID"
         # Drop all but CSDUID, CSDNAME, and geometry fields from csd
-        csd = csd[[geography_code, geography_name, 'geometry']]
+        if geography_name in csd.columns:
+            csd = csd[[geography_code, geography_name, 'geometry']]
+        else:
+            # Disseminations don't have a name
+            # So, we give them a name so as to treat all geographies the same
+            csd[geography_name] = csd['DGUID'] if 'DGUID' in csd.columns else csd[geography_code]
+            csd = csd[[geography_code, geography_name, 'geometry']]
 
         # Update CRS of MS and OSM data to match ODB EPSG:3347 CRS
         print("Updating OSM and MS Coordinate Reference Systems")
@@ -302,16 +308,27 @@ def valid_input_files(odb_file, osm_file, ms_file, csd_file):
 
 
 if __name__ == "__main__":
+    geographies = {
+        'lda_': 'DA',
+        'lcsd_': 'CSD'
+    }
+
     if len(sys.argv) == 6:
         args = sys.argv
+        for k, v in geographies.items():
+            if k in sys.argv[5]:
+                geography = v
         if valid_input_files(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]):
-            main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+            main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], geography=geography)
 
     elif len(sys.argv) == 5:
         # if only 4 arguments are provided, it's assumed no odb available
         args = sys.argv
+        for k, v in geographies.items():
+            if k in sys.argv[4]:
+                geography = v
         if valid_input_files(None, sys.argv[2], sys.argv[3], sys.argv[4]):
-            main(sys.argv[1], None, sys.argv[2], sys.argv[3], sys.argv[4])
+            main(sys.argv[1], None, sys.argv[2], sys.argv[3], sys.argv[4], geography=geography)
     else:
         raise SyntaxError("Invalid number of arguments.")
 
