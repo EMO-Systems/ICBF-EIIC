@@ -310,7 +310,7 @@ def valid_input_files(odb_file, osm_file, ms_file, csd_file):
 if __name__ == "__main__":
     geographies = {
         'lda_': 'DA',
-        'lcsd_': 'CSD'
+        'lcsd': 'CSD'
     }
 
     if len(sys.argv) == 6:
