@@ -5,16 +5,25 @@ CENSUS_GEO=../data/lda_000b21a_e/lda_000b21a_e.shp
 mkdir -p merge/output
 rm -f merge/output/*
 
-# Process Manitoba Data:
-echo Processing Manitoba data ...
-python Merge.py mb ../data/osm/mb/gis_osm_buildings_a_free_1.shp ../data/ms/mb/Manitoba.geojson $CENSUS_GEO
+FULLNAMES='Alberta BritishColumbia Manitoba NewBrunswick NewfoundlandandLabrador NovaScotia NorthwestTerritories Nunavut Ontario PrinceEdwardIsland Quebec Saskatchewan YukonTerritory'
+FULLNAMES=($FULLNAMES)
+ABBREVIATIONS='ab bc mb nb nl ns nw nu on pe qc sk yt'
+ABBREVIATIONS=($ABBREVIATIONS)
 
-zip -ro merge/mb_odb_osm_ms.zip merge/output/
-rm -f merge/output/*
-
-# Process Saskatchewan Data:
-echo Processing Saskatchewan data ...
-python Merge.py sk ../data/odb/sk/ODB_Saskatchewan/odb_saskatchewan.shp ../data/osm/sk/gis_osm_buildings_a_free_1.shp ../data/ms/sk/Saskatchewan.geojson $CENSUS_GEO
-
-zip -ro merge/sk_odb_osm_ms.zip merge/output/
-rm -f merge/output/*
+for i in $(seq ${#FULLNAMES[@]});
+do
+    ABRV=${ABBREVIATIONS[$i - 1]}
+    FULL=${FULLNAMES[$i - 1]}
+    FULLLC=$(echo "${FULL}" | tr '[:upper:]' '[:lower:]')
+    ODB=../data/odb/${ABRV}/ODB_${FULL}/odb_${FULLLC}.shp 
+    OSM=../data/osm/${ABRV}/gis_osm_buildings_a_free_1.shp 
+    MS=../data/ms/${ABRV}/${FULL}.geojson 
+    echo "Processing ${FULL} data ..."
+    if [[ -e $ODB ]]; then
+        Python Merge.py ${ABRV} $ODB $OSM $MS $CENSUS_GEO
+    else
+        Python Merge.py ${ABRV} $OSM $MS $CENSUS_GEO
+    fi
+    zip -ro merge/${ABRV}_odb_osm_ms.zip merge/output
+    rm -f merge/output/*
+done
