@@ -40,3 +40,12 @@ clean:
 	-rm -rf preprocessing/split
 	-rm preprocessing/preprocessed_ms.zip
 	-rm preprocessing/preprocessed_osm.zip
+dataclean: clean
+	-rm download.log
+	-rm -rf data/lcsd000b21a_e
+	-rm -rf data/lda_000b21a_e
+	-rm -rf data/lpr_000a21a_e
+	-rm -rf data/ms
+	-rm -rf data/odb
+	-rm -rf data/osm
+	-rm -rf data/correspondance

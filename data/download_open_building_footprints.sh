@@ -175,3 +175,9 @@ mkdir ../lda_000b21a_e
 cd ../lda_000b21a_e
 wget --no-check-certificate https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lda_000b21a_e.zip
 unzip lda_000b21a_e.zip
+
+# Get the Correspondance File to match ODB CSDs to other geographies
+mkdir ../correspondance
+cd ../correspondance
+wget --no-check-certificate https://www12.statcan.gc.ca/census-recensement/2021/geo/aip-pia/correspondence-correspondance/files-fichiers/2021_92-156-X_DA_AD.zip
+unzip 2021_92-156-X_DA_AD.zip

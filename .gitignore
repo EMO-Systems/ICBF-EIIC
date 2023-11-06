@@ -15,3 +15,6 @@ preprocessed_osm.zip
 split
 *log
 meow*
+data/correspondance
+data/lda_000b21a_e
+minifying/minified_building_footprints
